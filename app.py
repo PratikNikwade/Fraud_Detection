@@ -9,6 +9,21 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from PIL import Image
 import tensorflow as tf
+import keras
+
+# ── Patch: strip unsupported 'quantization_config' from saved configs ──
+# The model was saved with a newer Keras that includes quantization_config
+# in Dense/Conv2D layers, which the current Keras version doesn't recognize.
+_LAYERS_TO_PATCH = [keras.layers.Dense, keras.layers.Conv2D, keras.layers.BatchNormalization]
+for _layer_cls in _LAYERS_TO_PATCH:
+    _orig_from_config = _layer_cls.from_config.__func__ if hasattr(_layer_cls.from_config, '__func__') else _layer_cls.from_config
+
+    @classmethod
+    def _patched_from_config(cls, config, _orig=_orig_from_config):
+        config.pop('quantization_config', None)
+        return _orig(cls, config)
+
+    _layer_cls.from_config = _patched_from_config
 
 # ── App Setup ───────────────────────────────────────────
 app = Flask(__name__)
@@ -19,7 +34,7 @@ MODEL_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'best_frau
 
 print("[*] Loading model...")
 try:
-    model = tf.keras.models.load_model(MODEL_PATH)
+    model = tf.keras.models.load_model(MODEL_PATH, compile=False)
     print(f"[OK] Model loaded from {MODEL_PATH}")
 except Exception as e:
     print(f"[ERROR] Failed to load model: {e}")
