@@ -1,0 +1,33 @@
+{
+  "dataset": "godzilla04/internship-certificates",
+  "model": "EfficientNetB0 (Transfer Learning)",
+  "test_accuracy": 0.8409,
+  "test_f1_score": 0.8403,
+  "test_auc_roc": 0.9495,
+  "improvements": [
+    "Label smoothing (0.1)",
+    "Mixup augmentation (alpha=0.2)",
+    "Cosine annealing LR with warmup",
+    "Enhanced online augmentation",
+    "Test-Time Augmentation (5 augments)",
+    "Stratified train/val/test split"
+  ],
+  "config": {
+    "img_size": "(224, 224)",
+    "batch_size": "8",
+    "epochs_frozen": "30",
+    "epochs_finetune": "40",
+    "lr_frozen": "0.001",
+    "lr_finetune": "1e-05",
+    "dropout": "0.4",
+    "l2_reg": "0.0001",
+    "val_split": "0.2",
+    "test_split": "0.15",
+    "aug_factor": "8",
+    "label_smoothing": "0.1",
+    "mixup_alpha": "0.2",
+    "warmup_epochs": "3",
+    "tta_augments": "5",
+    "model_name": "best_fraud_model.keras"
+  }
+}
