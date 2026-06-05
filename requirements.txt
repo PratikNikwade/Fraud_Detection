@@ -3,3 +3,5 @@ flask-cors
 tensorflow
 numpy
 Pillow
+opencv-python
+scikit-learn
